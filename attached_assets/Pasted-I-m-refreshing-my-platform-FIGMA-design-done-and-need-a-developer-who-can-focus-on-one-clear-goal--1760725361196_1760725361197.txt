@@ -1,0 +1,25 @@
+I’m refreshing my platform (FIGMA design done) and need a developer who can focus on one clear goal: an events-driven careers hub where visitors can discover, register for, and stay informed about career-related events.
+
+Scope of work
+• Build a dedicated Events Listing page that:
+– Displays upcoming career events in an attractive grid/list.
+– Lets users filter events by category (e.g., workshops, webinars, fairs).
+– Supports free or paid tickets with a smooth checkout flow for paid options.
+– Allows organisers (me) to upload media—images, videos, PDFs—per event.
+– Enables visitor registration and automatically triggers confirmation emails plus future announcements or reminders.
+
+• Add a “Book a Career Coach” section that integrates a scheduling tool (Calendly, Acuity, or similar) so users can reserve and pay for sessions without leaving the site or just directing to a third party site.
+
+• Embed my proprietary assessment tool (already built) directly into the site, storing the results in the same user profile used for event sign-ups and coaching bookings.
+
+• Admin dashboard essentials: create/edit events, set price tiers, view registrations, manage media, and export attendee data.
+
+• Mobile-first, accessible design with clear CTAs and a frictionless sign-up experience. No job-search or job-application modules are required; those features have been removed.
+
+Tech stack
+I’m comfortable with popular frameworks—React/Next.js, Laravel, or WordPress + custom plugin—so propose the stack you’re fastest with, noting any payment gateways or notification services you prefer (e.g., Stripe, PayPal, Twilio, Firebase).
+
+Delivery
+I expect a working, deployed module with clean, well-documented code, basic test coverage, and a walkthrough on how to use the admin panel. Phase-two enhancements are possible once this core is live, so build with extensibility in mind.
+
+If you’ve launched similar event or booking portals, I’d love to see your demo links in your bid.
