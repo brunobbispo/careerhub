@@ -5,96 +5,16 @@ import AssessmentSection from "@/components/AssessmentSection";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import workshopImage from "@assets/generated_images/Workshop_event_thumbnail_e0738c1e.png";
-import webinarImage from "@assets/generated_images/Webinar_event_thumbnail_6bd3ac62.png";
-import fairImage from "@assets/generated_images/Career_fair_event_thumbnail_8fb6f24e.png";
+import { useQuery } from "@tanstack/react-query";
+import type { Event } from "@shared/schema";
 
 export default function Home() {
-  const featuredEvents = [
-    {
-      id: "1",
-      title: "Resume Writing Masterclass",
-      description: "Learn from industry experts how to craft a resume that gets you noticed by top recruiters and hiring managers.",
-      category: "workshop" as const,
-      date: "Dec 15, 2025",
-      time: "2:00 PM",
-      location: "Online",
-      price: 29,
-      capacity: 50,
-      registered: 35,
-      imageUrl: workshopImage,
-      isFeatured: true,
-    },
-    {
-      id: "2",
-      title: "Tech Career Webinar Series",
-      description: "Monthly webinar covering the latest trends in tech careers, from AI to cloud computing opportunities.",
-      category: "webinar" as const,
-      date: "Dec 18, 2025",
-      time: "6:00 PM",
-      location: "Virtual",
-      price: 0,
-      capacity: 200,
-      registered: 156,
-      imageUrl: webinarImage,
-    },
-    {
-      id: "3",
-      title: "Annual Tech Career Fair 2025",
-      description: "Meet representatives from over 100 companies actively hiring. Network with recruiters and explore opportunities.",
-      category: "fair" as const,
-      date: "Jan 10, 2026",
-      time: "10:00 AM",
-      location: "San Francisco Convention Center",
-      price: 0,
-      capacity: 1000,
-      registered: 687,
-      imageUrl: fairImage,
-      isFeatured: true,
-    },
-  ];
+  const { data: events = [], isLoading } = useQuery<Event[]>({
+    queryKey: ["/api/events"],
+  });
 
-  const upcomingEvents = [
-    {
-      id: "4",
-      title: "Interview Preparation Workshop",
-      description: "Practice common interview questions and learn strategies to present your best self to potential employers.",
-      category: "workshop" as const,
-      date: "Dec 20, 2025",
-      time: "3:00 PM",
-      location: "Online",
-      price: 39,
-      capacity: 30,
-      registered: 22,
-      imageUrl: workshopImage,
-    },
-    {
-      id: "5",
-      title: "Salary Negotiation Webinar",
-      description: "Master the art of negotiating your salary and benefits package with confidence and data-driven strategies.",
-      category: "webinar" as const,
-      date: "Dec 22, 2025",
-      time: "5:00 PM",
-      location: "Virtual",
-      price: 0,
-      capacity: 150,
-      registered: 89,
-      imageUrl: webinarImage,
-    },
-    {
-      id: "6",
-      title: "Healthcare Careers Fair",
-      description: "Explore opportunities in healthcare from nursing to hospital administration with leading medical institutions.",
-      category: "fair" as const,
-      date: "Jan 15, 2026",
-      time: "9:00 AM",
-      location: "Los Angeles Conference Hall",
-      price: 0,
-      capacity: 500,
-      registered: 234,
-      imageUrl: fairImage,
-    },
-  ];
+  const featuredEvents = events.filter((event) => event.isFeatured);
+  const upcomingEvents = events.filter((event) => !event.isFeatured).slice(0, 6);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -115,9 +35,20 @@ export default function Home() {
               </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredEvents.map((event) => (
-                <EventCard key={event.id} {...event} />
-              ))}
+              {isLoading ? (
+                <p className="text-muted-foreground">Loading events...</p>
+              ) : featuredEvents.length === 0 ? (
+                <p className="text-muted-foreground">No featured events available</p>
+              ) : (
+                featuredEvents.map((event) => (
+                  <EventCard 
+                    key={event.id} 
+                    {...event} 
+                    category={event.category as "workshop" | "webinar" | "fair"}
+                    isFeatured={event.isFeatured ?? undefined}
+                  />
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -137,9 +68,20 @@ export default function Home() {
               </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingEvents.map((event) => (
-                <EventCard key={event.id} {...event} />
-              ))}
+              {isLoading ? (
+                <p className="text-muted-foreground">Loading events...</p>
+              ) : upcomingEvents.length === 0 ? (
+                <p className="text-muted-foreground">No upcoming events available</p>
+              ) : (
+                upcomingEvents.map((event) => (
+                  <EventCard 
+                    key={event.id} 
+                    {...event} 
+                    category={event.category as "workshop" | "webinar" | "fair"}
+                    isFeatured={event.isFeatured ?? undefined}
+                  />
+                ))
+              )}
             </div>
           </div>
         </section>

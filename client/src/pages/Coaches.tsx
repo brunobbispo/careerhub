@@ -3,84 +3,13 @@ import CoachCard from "@/components/CoachCard";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import femaleCoachImage from "@assets/generated_images/Female_coach_profile_photo_859fe82b.png";
-import maleCoachImage from "@assets/generated_images/Male_coach_profile_photo_ac4db9d0.png";
+import { useQuery } from "@tanstack/react-query";
+import type { Coach } from "@shared/schema";
 
 export default function Coaches() {
-  const coaches = [
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      title: "Senior Career Strategist",
-      specialties: ["Resume Review", "Interview Prep", "Career Transition"],
-      rating: 4.9,
-      reviews: 127,
-      rate30min: 49,
-      rate60min: 89,
-      imageUrl: femaleCoachImage,
-      available: true,
-    },
-    {
-      id: "2",
-      name: "Michael Chen",
-      title: "Executive Career Coach",
-      specialties: ["Leadership Development", "Executive Coaching", "Negotiation"],
-      rating: 4.8,
-      reviews: 94,
-      rate30min: 59,
-      rate60min: 109,
-      imageUrl: maleCoachImage,
-      available: false,
-    },
-    {
-      id: "3",
-      name: "Emily Rodriguez",
-      title: "Tech Career Specialist",
-      specialties: ["Tech Interviews", "Coding Career", "Portfolio Review"],
-      rating: 5.0,
-      reviews: 156,
-      rate30min: 55,
-      rate60min: 99,
-      imageUrl: femaleCoachImage,
-      available: true,
-    },
-    {
-      id: "4",
-      name: "David Williams",
-      title: "Career Change Expert",
-      specialties: ["Career Pivoting", "Skills Assessment", "Job Search"],
-      rating: 4.7,
-      reviews: 83,
-      rate30min: 45,
-      rate60min: 79,
-      imageUrl: maleCoachImage,
-      available: true,
-    },
-    {
-      id: "5",
-      name: "Jennifer Lee",
-      title: "Personal Branding Coach",
-      specialties: ["LinkedIn Optimization", "Personal Brand", "Networking"],
-      rating: 4.9,
-      reviews: 112,
-      rate30min: 49,
-      rate60min: 89,
-      imageUrl: femaleCoachImage,
-      available: false,
-    },
-    {
-      id: "6",
-      name: "Robert Taylor",
-      title: "Interview Success Coach",
-      specialties: ["Behavioral Interviews", "Technical Interviews", "Mock Interviews"],
-      rating: 4.8,
-      reviews: 98,
-      rate30min: 52,
-      rate60min: 95,
-      imageUrl: maleCoachImage,
-      available: true,
-    },
-  ];
+  const { data: coaches = [], isLoading } = useQuery<Coach[]>({
+    queryKey: ["/api/coaches"],
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -118,9 +47,27 @@ export default function Coaches() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {coaches.map((coach) => (
-                <CoachCard key={coach.id} {...coach} />
-              ))}
+              {isLoading ? (
+                <p className="text-muted-foreground">Loading coaches...</p>
+              ) : coaches.length === 0 ? (
+                <p className="text-muted-foreground">No coaches available</p>
+              ) : (
+                coaches.map((coach) => (
+                  <CoachCard 
+                    key={coach.id}
+                    id={coach.id}
+                    name={coach.name}
+                    title={coach.title}
+                    specialties={coach.specialties}
+                    rating={coach.rating}
+                    reviews={coach.reviews}
+                    rate30min={coach.rate30min}
+                    rate60min={coach.rate60min}
+                    imageUrl={coach.imageUrl}
+                    available={coach.available ?? false}
+                  />
+                ))
+              )}
             </div>
           </div>
         </section>

@@ -6,119 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import workshopImage from "@assets/generated_images/Workshop_event_thumbnail_e0738c1e.png";
-import webinarImage from "@assets/generated_images/Webinar_event_thumbnail_6bd3ac62.png";
-import fairImage from "@assets/generated_images/Career_fair_event_thumbnail_8fb6f24e.png";
+import { useQuery } from "@tanstack/react-query";
+import type { Event } from "@shared/schema";
 
 export default function Events() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const allEvents = [
-    {
-      id: "1",
-      title: "Resume Writing Masterclass",
-      description: "Learn from industry experts how to craft a resume that gets you noticed by top recruiters.",
-      category: "workshop" as const,
-      date: "Dec 15, 2025",
-      time: "2:00 PM",
-      location: "Online",
-      price: 29,
-      capacity: 50,
-      registered: 35,
-      imageUrl: workshopImage,
-    },
-    {
-      id: "2",
-      title: "Tech Career Webinar Series",
-      description: "Monthly webinar covering the latest trends in tech careers.",
-      category: "webinar" as const,
-      date: "Dec 18, 2025",
-      time: "6:00 PM",
-      location: "Virtual",
-      price: 0,
-      capacity: 200,
-      registered: 156,
-      imageUrl: webinarImage,
-    },
-    {
-      id: "3",
-      title: "Annual Tech Career Fair 2025",
-      description: "Meet representatives from over 100 companies actively hiring.",
-      category: "fair" as const,
-      date: "Jan 10, 2026",
-      time: "10:00 AM",
-      location: "San Francisco Convention Center",
-      price: 0,
-      capacity: 1000,
-      registered: 687,
-      imageUrl: fairImage,
-    },
-    {
-      id: "4",
-      title: "Interview Preparation Workshop",
-      description: "Practice common interview questions and learn winning strategies.",
-      category: "workshop" as const,
-      date: "Dec 20, 2025",
-      time: "3:00 PM",
-      location: "Online",
-      price: 39,
-      capacity: 30,
-      registered: 22,
-      imageUrl: workshopImage,
-    },
-    {
-      id: "5",
-      title: "Salary Negotiation Webinar",
-      description: "Master the art of negotiating your salary with confidence.",
-      category: "webinar" as const,
-      date: "Dec 22, 2025",
-      time: "5:00 PM",
-      location: "Virtual",
-      price: 0,
-      capacity: 150,
-      registered: 89,
-      imageUrl: webinarImage,
-    },
-    {
-      id: "6",
-      title: "Healthcare Careers Fair",
-      description: "Explore opportunities in healthcare with leading institutions.",
-      category: "fair" as const,
-      date: "Jan 15, 2026",
-      time: "9:00 AM",
-      location: "Los Angeles Conference Hall",
-      price: 0,
-      capacity: 500,
-      registered: 234,
-      imageUrl: fairImage,
-    },
-    {
-      id: "7",
-      title: "LinkedIn Profile Optimization",
-      description: "Transform your LinkedIn profile into a powerful career tool.",
-      category: "workshop" as const,
-      date: "Dec 28, 2025",
-      time: "1:00 PM",
-      location: "Online",
-      price: 25,
-      capacity: 40,
-      registered: 31,
-      imageUrl: workshopImage,
-    },
-    {
-      id: "8",
-      title: "Remote Work Best Practices",
-      description: "Learn how to excel in remote and hybrid work environments.",
-      category: "webinar" as const,
-      date: "Jan 5, 2026",
-      time: "4:00 PM",
-      location: "Virtual",
-      price: 0,
-      capacity: 180,
-      registered: 98,
-      imageUrl: webinarImage,
-    },
-  ];
+  const { data: allEvents = [], isLoading } = useQuery<Event[]>({
+    queryKey: ["/api/events"],
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -170,9 +66,20 @@ export default function Events() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {allEvents.map((event) => (
-                    <EventCard key={event.id} {...event} />
-                  ))}
+                  {isLoading ? (
+                    <p className="text-muted-foreground">Loading events...</p>
+                  ) : allEvents.length === 0 ? (
+                    <p className="text-muted-foreground">No events available</p>
+                  ) : (
+                    allEvents.map((event) => (
+                      <EventCard 
+                        key={event.id} 
+                        {...event} 
+                        category={event.category as "workshop" | "webinar" | "fair"}
+                        isFeatured={event.isFeatured ?? undefined}
+                      />
+                    ))
+                  )}
                 </div>
 
                 <div className="mt-12 text-center">
