@@ -1,14 +1,35 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import {
   insertEventSchema,
   insertRegistrationSchema,
   insertBookingSchema,
 } from "@shared/schema";
+import Stripe from "stripe";
+
+let stripe: Stripe | null = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2025-09-30.clover",
+  });
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Events Routes
+  await setupAuth(app);
+
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   app.get("/api/events", async (req, res) => {
     try {
       const events = await storage.getEvents();
@@ -56,7 +77,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Coaches Routes
   app.get("/api/coaches", async (req, res) => {
     try {
       const coaches = await storage.getCoaches();
@@ -103,6 +123,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to fetch bookings" });
     }
   });
+
+  if (stripe) {
+    app.post("/api/create-payment-intent", async (req, res) => {
+      try {
+        const { amount } = req.body;
+        const paymentIntent = await stripe!.paymentIntents.create({
+          amount: Math.round(amount * 100),
+          currency: "usd",
+        });
+        res.json({ clientSecret: paymentIntent.client_secret });
+      } catch (error: any) {
+        res
+          .status(500)
+          .json({ message: "Error creating payment intent: " + error.message });
+      }
+    });
+  }
 
   const httpServer = createServer(app);
 
